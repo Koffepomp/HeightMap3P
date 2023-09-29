@@ -1,3 +1,4 @@
+using System.Threading.Tasks;
 using UnityEngine;
 
 [RequireComponent(typeof(Terrain))]
@@ -15,10 +16,10 @@ public class HouseModelBuilder : MonoBehaviour
 	void Start()
 	{
 		HouseManager.SetHeightMap(heightMap);
-		InvokeRepeating("ChangeHeightMap", 0f, 3f);  // Calls ModifyTerrain every 3 seconds
+		InvokeRepeating("ChangeHeightMap", 0f, 1f);  // Calls ModifyTerrain every 3 seconds
 	}
 
-	public void ChangeHeightMap()
+	public async void ChangeHeightMap()
 	{
 		if (HouseManager.GetHeightMap() == null)
 		{
@@ -35,16 +36,16 @@ public class HouseModelBuilder : MonoBehaviour
 		{
 			this.heightMap = HouseManager.GetHeightMap();
 			Debug.Log("New heightmap loaded!");
-			ModifyTerrain();
+			await ModifyTerrain();
 		}
 	}
 
-	void ModifyTerrain()
+	async Task<bool> ModifyTerrain()
 	{
 		if (heightMap == null)
 		{
 			Debug.LogError("Heightmap is not assigned!");
-			return;
+			return false;
 		}
 
 		Terrain terrain = GetComponent<Terrain>();
@@ -110,6 +111,7 @@ public class HouseModelBuilder : MonoBehaviour
 		terrainData.SetHeights(0, 0, heights);
 
 		ApplyTextures(terrainData);
+		return true;
 	}
 	void ApplyTextures(TerrainData terrainData)
 	{
